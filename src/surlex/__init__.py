@@ -1,5 +1,6 @@
 from surlex.grammar import Parser, RegexScribe, get_all_nodes, MacroTagNode
 from surlex.macros import MacroRegistry, DefaultMacroRegistry
+from surlex import grammar
 import re
 
 class Surlex(object):
@@ -39,6 +40,9 @@ class Surlex(object):
         if m:
             return m.groupdict()
 
+    def reverse_match(self, args):
+        return reverse_match(self,args)
+
 # This allows "surlex.register_macro" to register to the default registry
 register_macro = DefaultMacroRegistry.register
 
@@ -54,3 +58,19 @@ def parsed_surlex_object(surlex):
 
 def match(surlex, subject):
     return Surlex(surlex).match(subject)
+
+def reverse_match(surlex, args):
+    if not isinstance(surlex,Surlex):
+        surlex = Surlex(surlex)
+    surlex.translate()  # <for node list
+    result = ""
+    for node in surlex.node_list:
+        if isinstance(node,grammar.TextNode):
+            result = result + node.token
+        if isinstance(node,grammar.TagNode):
+            if args.get(node.name):
+                result = result + str(args.get(node.name))
+            else:
+                return 
+    #FIXME : check extra args
+    return result

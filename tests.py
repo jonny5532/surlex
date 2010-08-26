@@ -1,5 +1,5 @@
 import unittest
-from surlex import surlex_to_regex as surl, match, register_macro, parsed_surlex_object, Surlex, MacroRegistry
+from surlex import surlex_to_regex as surl, match, reverse_match, register_macro, parsed_surlex_object, Surlex, MacroRegistry
 from surlex import grammar
 from surlex.exceptions import MalformedSurlex, MacroDoesNotExist
 import re
@@ -270,6 +270,24 @@ class TestSurlex(unittest.TestCase):
         m = match(surlex, subject)
         self.assertEqual(m['year'], '2008')
         self.assertEqual(m['slug'], 'this-article')
+
+    def test_reverse_match(self):
+        surlex = '/articles/<year>/<slug>/'
+        
+        args = {}
+        self.assertFalse(reverse_match(surlex, args))
+        args = {'year':2020}
+        self.assertFalse(reverse_match(surlex, args))
+        args = {'slug':'sdf'}
+        self.assertFalse(reverse_match(surlex, args))
+
+        args = {'year':2020,'slug':'sdf'}
+        self.assertEqual(reverse_match(surlex,args),'/articles/2020/sdf/')
+
+        o_surlex = Surlex(surlex)
+        self.assertEqual(o_surlex.reverse_match(args),'/articles/2020/sdf/')
+
+        
 
 if __name__ == '__main__':
     unittest.main()
