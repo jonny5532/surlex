@@ -60,6 +60,12 @@ def match(surlex, subject):
     return Surlex(surlex).match(subject)
 
 def reverse_match(surlex, args):
+    dict_mode = False
+    if isinstance(args,dict):
+        dict_mode = True
+    else:
+        #FIXME check if we have list here
+        args = args[:]
     if not isinstance(surlex,Surlex):
         surlex = Surlex(surlex)
     surlex.translate()  # <for node list
@@ -68,8 +74,13 @@ def reverse_match(surlex, args):
         if isinstance(node,grammar.TextNode):
             result = result + node.token
         if isinstance(node,grammar.TagNode):
-            if args.get(node.name):
-                result = result + str(args.get(node.name))
+            if dict_mode:
+                if args.get(node.name):
+                    result = result + str(args.get(node.name))
+                else:
+                    return
+            elif len(args):
+                result = result + str(args.pop(0))
             else:
                 return 
     #FIXME : check extra args
