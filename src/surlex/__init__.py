@@ -69,18 +69,18 @@ def reverse_match(surlex, args):
     if not isinstance(surlex,Surlex):
         surlex = Surlex(surlex)
     surlex.translate()  # <for node list
-    result = ""
+    result = u""
     for node in surlex.node_list:
         if isinstance(node,grammar.TextNode):
             result = result + node.token
         if isinstance(node,grammar.TagNode):
             if dict_mode:
                 if args.get(node.name):
-                    result = result + str(args.get(node.name))
+                    result = result + unicode(args.get(node.name))
                 else:
                     return
             elif len(args):
-                result = result + str(args.pop(0))
+                result = result + unicode(args.pop(0))
             else:
                 return 
     #FIXME : check extra args
