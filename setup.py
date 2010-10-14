@@ -23,7 +23,8 @@ options = dict(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-    ]
+    ],
+    options =  {'egg_info' : { 'egg_base': 'src' }},
 )
 
 if installer == 'setuptools':
