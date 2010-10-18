@@ -59,6 +59,29 @@ def parsed_surlex_object(surlex):
 def match(surlex, subject):
     return Surlex(surlex).match(subject)
 
+def reverse_match_helper(node_list,args,dict_mode):
+    if not dict_mode:
+        args=args[:]
+    result = u""
+    for node in node_list:
+        if isinstance(node,grammar.TextNode):
+            result = result + node.token
+        if isinstance(node,grammar.TagNode):
+            if dict_mode:
+                if args.get(node.name):
+                    result = result + unicode(args.get(node.name))
+                else:
+                    return None
+            elif len(args):
+                result = result + unicode(args.pop(0))
+            else:
+                return None
+        if isinstance(node,grammar.OptionalNode):
+            opt_result =  reverse_match_helper(node.node_list,args,dict_mode)
+            if opt_result is not None:
+                result= result + opt_result
+    return result
+
 def reverse_match(surlex, args):
     dict_mode = False
     if isinstance(args,dict):
@@ -69,19 +92,6 @@ def reverse_match(surlex, args):
     if not isinstance(surlex,Surlex):
         surlex = Surlex(surlex)
     surlex.translate()  # <for node list
-    result = u""
-    for node in surlex.node_list:
-        if isinstance(node,grammar.TextNode):
-            result = result + node.token
-        if isinstance(node,grammar.TagNode):
-            if dict_mode:
-                if args.get(node.name):
-                    result = result + unicode(args.get(node.name))
-                else:
-                    return
-            elif len(args):
-                result = result + unicode(args.pop(0))
-            else:
-                return 
+    result = reverse_match_helper(surlex.node_list, args, dict_mode)
     #FIXME : check extra args
     return result

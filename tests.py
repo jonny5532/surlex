@@ -294,7 +294,24 @@ class TestSurlex(unittest.TestCase):
 
         args.append('thefuture')
         self.assertEqual(reverse_match(surlex,args),'/articles/2020/thefuture/')
+
         
+    def test_reverse_match_with_simple_opt(self):
+        surlex = '/articles/<year>/(<slug>/)'
+        args = {}
+        self.assertFalse(reverse_match(surlex,args))
+        args = {'year':2020}
+        self.assertEqual(reverse_match(surlex,args),'/articles/2020/')
+        args = {'year':2020,'slug':'thefuture'}
+        self.assertEqual(reverse_match(surlex,args),'/articles/2020/thefuture/')
+
+        args = list()
+        self.assertFalse(reverse_match(surlex,args))
+        args.append(2020)
+        self.assertEqual(reverse_match(surlex,args),'/articles/2020/')
+        args.append('thefuture')
+        self.assertEqual(reverse_match(surlex,args),'/articles/2020/thefuture/')
+
 
 if __name__ == '__main__':
     unittest.main()
